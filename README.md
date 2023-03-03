@@ -16,6 +16,15 @@ Checks packages for:
 * Unavailable URLs
 * Insecure URLs
 
+## Usage
+
+```
+packagescanner2 <packages.json> [--old=packages_old.json] [--check-urls]
+```
+
+If an old package list is specified only changed packages are checked.  
+If `--check-urls` is specified URLs are tested for reachability.
+
 ## Copyright
 
 Based on package_scanner.nim by Federico Ceratto

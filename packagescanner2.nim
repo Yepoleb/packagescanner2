@@ -50,7 +50,7 @@ template checkUrl(urlType: string, url: string) =
     logPackageError(displayName & " has an empty " & urlType & " URL")
   elif not url.startsWith("https://"):
     logPackageError(displayName & " has a non-https " & urlType & " URL: " & url)
-  elif checkUrls and not isDeleted:
+  elif checkUrls:
     let urlError = client.checkUrlReachable(url)
     if urlError != "":
       logPackageError(displayName & " has an unreachable " & urlType & " URL: " & url)
@@ -123,9 +123,6 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
         if packageNameCounter[pkg["alias"].getStr().toLowerAscii()] == 0:
           logPackageError(displayName & " is an alias pointing to a missing package")
       else:
-        if not pkgName.validIdentifier():
-          logPackageError(displayName & " is not a valid identifier")
-
         var tags = pkg.getElemsIfExists("tags")
         var isDeleted = false
         if tags.len == 0:
@@ -140,33 +137,37 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
           if emptyTags:
             logPackageError(displayName & " has empty tags")
 
-        if not pkg.hasKey("method"):
-          logPackageError(displayName & " has no method")
-        elif pkg["method"].kind != JString or pkg["method"].str notin ["git", "hg"]:
-          logPackageError(displayName & " has an invalid method")
+        if not isDeleted:
+          if not pkgName.validIdentifier():
+            logPackageError(displayName & " is not a valid identifier")
 
-        if pkg.getStrIfExists("description") == "":
-          logPackageError(displayName & " has no description")
+          if not pkg.hasKey("method"):
+            logPackageError(displayName & " has no method")
+          elif pkg["method"].kind != JString or pkg["method"].str notin ["git", "hg"]:
+            logPackageError(displayName & " has an invalid method")
 
-        if pkg.getStrIfExists("license") == "":
-          logPackageError(displayName & " has no license")
+          if pkg.getStrIfExists("description") == "":
+            logPackageError(displayName & " has no description")
 
-        var downloadUrl = pkg.getStrIfExists("url")
-        if not pkg.hasKey("url"):
-          logPackageError(displayName & " has no download URL")
-        else:
-          downloadUrl = downloadUrl
-          checkUrl("download", downloadUrl)
+          if pkg.getStrIfExists("license") == "":
+            logPackageError(displayName & " has no license")
 
-        if pkg.hasKey("web"):
-          let webUrl = pkg["web"].getStr()
-          if webUrl != downloadUrl:
-            checkUrl("web", webUrl)
+          var downloadUrl = pkg.getStrIfExists("url")
+          if not pkg.hasKey("url"):
+            logPackageError(displayName & " has no download URL")
+          else:
+            downloadUrl = downloadUrl
+            checkUrl("download", downloadUrl)
 
-        if pkg.hasKey("doc"):
-          let docUrl = pkg["doc"].getStr()
-          if docUrl != downloadUrl:
-            checkUrl("doc", docUrl)
+          if pkg.hasKey("web"):
+            let webUrl = pkg["web"].getStr()
+            if webUrl != downloadUrl:
+              checkUrl("web", webUrl)
+
+          if pkg.hasKey("doc"):
+            let docUrl = pkg["doc"].getStr()
+            if docUrl != downloadUrl:
+              checkUrl("doc", docUrl)
 
 
     if not success:

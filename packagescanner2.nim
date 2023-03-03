@@ -9,12 +9,12 @@ import std/net
 
 
 const usage = """
-Usage: packagescanner2 <packages.json> [--old=packages_old.json] --fetch
+Usage: packagescanner2 <packages.json> [--old=packages_old.json] [--check-urls]
 Scans the nimble package list for mistakes and dead packages.
 Options:
-  --old=   Old package file, will only scan changed packages
-  --fetch  Try to request the package url
-  --help   Print this help text"""
+  --old=        Old package file, will only scan changed packages
+  --check-urls  Try to request the package url
+  --help        Print this help text"""
 
 
 proc checkUrlReachable(client: HttpClient, url: string): string =
@@ -50,7 +50,7 @@ template checkUrl(urlType: string, url: string) =
     logPackageError(displayName & " has an empty " & urlType & " URL")
   elif not url.startsWith("https://"):
     logPackageError(displayName & " has a non-https " & urlType & " URL: " & url)
-  elif fetch and not isDeleted:
+  elif checkUrls and not isDeleted:
     let urlError = client.checkUrlReachable(url)
     if urlError != "":
       logPackageError(displayName & " has an unreachable " & urlType & " URL: " & url)
@@ -64,7 +64,7 @@ proc getElemsIfExists(n: JsonNode, name: string, default: seq[JsonNode] = @[]): 
   if n.hasKey(name) and n[name].kind == JArray:
     result = n[name].elems
 
-proc checkPackages(newPackagesPath: string, oldPackagesPath: string, fetch: bool = false): int =
+proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: bool = false): int =
   var oldPackagesTable = initTable[string, JsonNode]()
   if oldPackagesPath != "":
     let oldPackagesJson = parseJson(readFile(oldPackagesPath))
@@ -82,7 +82,7 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, fetch: bool
       packageNameCounter.inc(pkgNameLower)
   
   var client: HttpClient = nil
-  if fetch:
+  if checkUrls:
     client = newHttpClient(timeout=3000)
     client.headers = newHttpHeaders({"User-Agent": "Nim packge_scanner/2.0"})
   
@@ -176,7 +176,7 @@ proc cliMain(): int =
   var parser = initOptParser(os.commandLineParams())
   var newPackagesPath = ""
   var oldPackagesPath = ""
-  var fetch = false
+  var checkUrls = false
   while true:
     parser.next()
     case parser.kind:
@@ -184,8 +184,8 @@ proc cliMain(): int =
     of cmdShortOption, cmdLongOption:
       if parser.key == "old":
         oldPackagesPath = parser.val
-      elif parser.key == "fetch":
-        fetch = true
+      elif parser.key == "check-urls":
+        checkUrls = true
       elif parser.key == "help":
         echo usage
         return 0
@@ -200,7 +200,7 @@ proc cliMain(): int =
     echo usage
     return 1
 
-  result = checkPackages(newPackagesPath, oldPackagesPath, fetch)
+  result = checkPackages(newPackagesPath, oldPackagesPath, checkUrls)
 
 when isMainModule:
   quit(cliMain())

@@ -29,7 +29,7 @@ proc checkUrlReachable(client: HttpClient, url: string): string =
     if not resp.code.is2xx:
       result = "Server returned status " & $resp.code
   except TimeoutError:
-    result = "Timeout after " & $client.timeout & " seconds"
+    result = "Timeout after " & $client.timeout & "ms"
     client.close()
   except HttpRequestError:
     result = "HTTP error: " & getCurrentExceptionMsg()

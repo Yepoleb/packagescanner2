@@ -22,7 +22,7 @@ proc checkUrlReachable(client: HttpClient, url: string): string =
   if url.startsWith("https://github.com"):
     if existsEnv("GITHUB_TOKEN"):
       headers = newHttpHeaders({"Authorization": "Bearer " & getEnv("GITHUB_TOKEN")})
-  
+
   try:
     let resp = client.request(url, headers=headers)
     discard resp.bodyStream.readAll()
@@ -74,7 +74,7 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
       let oldNameLower = oldPkg.getStrIfExists("name").toLowerAscii()
       if oldNameLower != "":
         oldPackagesTable[oldNameLower] = oldPkg
-  
+
   let newPackagesJson = parseJson(readFile(newPackagesPath))
   # Do a first pass through the list to count duplicate names
   var packageNameCounter = initCountTable[string]()
@@ -82,12 +82,12 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
     let pkgNameLower = pkg.getStrIfExists("name").toLowerAscii()
     if pkgNameLower != "":
       packageNameCounter.inc(pkgNameLower)
-  
+
   var client: HttpClient = nil
   if checkUrls:
     client = newHttpClient(timeout=3000)
     client.headers = newHttpHeaders({"User-Agent": "Nim packge_scanner/2.0"})
-  
+
   var modifiedPackages = 0
   var failedPackages = 0
   for pkg in newPackagesJson:
@@ -97,12 +97,12 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
     var displayName = pkgName
     if displayName == "":
       displayName = "<unnamed package>"
-    
+
     # Start with detecting duplicates
     if packageNameCounter[pkgNameLower] > 1:
       let url = pkg.getStrIfExists("url", "<no url>")
       logPackageError("Duplicate package " & displayName & " from url " & url)
-    
+
     # isNew should be used in future versions to do a conditional inspection
     # of the package contents which requires downloading the full release tarball
     let isNew = not oldPackagesTable.hasKey(pkgNameLower)
@@ -111,13 +111,13 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
       isModified = true
     else:
       isModified = oldPackagesTable[pkgNameLower] != pkg
-    
+
     if isModified:
       inc modifiedPackages
-      
+
       if pkgName == "":
         logPackageError("Missing package name")
-        
+
       let isAlias = pkg.hasKey("alias")
       if isAlias:
         if packageNameCounter[pkg["alias"].getStr().toLowerAscii()] == 0:
@@ -125,7 +125,7 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
       else:
         if not pkgName.validIdentifier():
           logPackageError(displayName & " is not a valid identifier")
-        
+
         var tags = pkg.getElemsIfExists("tags")
         var isDeleted = false
         if tags.len == 0:
@@ -139,30 +139,30 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
               isDeleted = true
           if emptyTags:
             logPackageError(displayName & " has empty tags")
-        
+
         if not pkg.hasKey("method"):
           logPackageError(displayName & " has no method")
         elif pkg["method"].kind != JString or pkg["method"].str notin ["git", "hg"]:
           logPackageError(displayName & " has an invalid method")
-          
+
         if pkg.getStrIfExists("description") == "":
           logPackageError(displayName & " has no description")
-        
+
         if pkg.getStrIfExists("license") == "":
           logPackageError(displayName & " has no license")
-        
+
         var downloadUrl = pkg.getStrIfExists("url")
         if not pkg.hasKey("url"):
           logPackageError(displayName & " has no download URL")
         else:
           downloadUrl = downloadUrl
           checkUrl("download", downloadUrl)
-        
+
         if pkg.hasKey("web"):
           let webUrl = pkg["web"].getStr()
           if webUrl != downloadUrl:
             checkUrl("web", webUrl)
-        
+
         if pkg.hasKey("doc"):
           let docUrl = pkg["doc"].getStr()
           if docUrl != downloadUrl:
@@ -172,14 +172,14 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
     if not success:
       inc failedPackages
 
-  
+
   echo "\nFound ", modifiedPackages, " modified package(s)"
   echo "Problematic packages count: ", failedPackages
   if failedPackages > 0:
     result = 1
-  
 
-proc cliMain(): int = 
+
+proc cliMain(): int =
   var parser = initOptParser(os.commandLineParams())
   var newPackagesPath = ""
   var oldPackagesPath = ""

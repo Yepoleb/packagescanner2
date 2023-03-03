@@ -1,0 +1,92 @@
+[
+  {
+    "name": "prologue",
+    "url": "https://github.com/planety/Prologue",
+    "method": "git",
+    "tags": [
+      "web",
+      "prologue",
+      "starlight",
+      "jester"
+    ],
+    "description": "Another micro web framework.",
+    "license": "MIT",
+    "web": "https://github.com/planety/Prologue",
+    "doc": "https://planety.github.io/prologue"
+  },
+  {
+    "name": "prologue",
+    "url": "https://github.com/planety/Prologue",
+    "method": "git",
+    "tags": [
+      "web",
+      "prologue",
+      "starlight",
+      "jester"
+    ],
+    "description": "Another micro web framework.",
+    "license": "MIT",
+    "web": "https://github.com/planety/Prologue",
+    "doc": "https://planety.github.io/prologue"
+  },
+  {
+    "name": "test-invalid",
+    "url": "https://github.com/deleted/deleted",
+    "method": "invalid",
+    "tags": [
+      ""
+    ],
+    "description": "description",
+    "license": "test",
+    "web": "https://github.com/deleted/deletedweb",
+    "doc": "https://github.com/deleted/deleteddoc"
+  },
+  {
+    "name": "test_badurl",
+    "url": "http://github.com",
+    "method": "git",
+    "tags": ["bad"],
+    "description": "a",
+    "license": "MIT",
+    "web": "http://github.com",
+    "doc": "http://github.com",
+  },
+  {
+    "name": "",
+    "url": "",
+    "method": "",
+    "tags": [],
+    "description": "",
+    "license": "",
+    "web": "",
+    "doc": ""
+  },
+  {
+  },
+  {
+    "name": "test_wrongtype",
+    "url": 100,
+    "method": null,
+    "tags": 0.2,
+    "description": [],
+    "license": {},
+    "web": -2,
+    "doc": 10e100000
+  },
+  {
+    "name": "test_alias",
+    "alias": "test_empty"
+  },
+  {
+    "name": "test_badalias",
+    "alias": "notapackage"
+  },
+  {
+    "name": "test_badalias2",
+    "alias": null
+  },
+  {
+    "name": "test_badalias2",
+    "alias": ""
+  }
+]

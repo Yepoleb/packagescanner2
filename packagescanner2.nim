@@ -173,7 +173,9 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
       inc failedPackages
 
 
-  echo "\nFound ", modifiedPackages, " modified package(s)"
+  echo ""
+  if oldPackagesPath != "":
+    echo "Found ", modifiedPackages, " modified package(s)"
   echo "Problematic packages count: ", failedPackages
   if failedPackages > 0:
     result = 1

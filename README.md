@@ -16,6 +16,13 @@ Checks packages for:
 * Unavailable URLs
 * Insecure URLs
 
+## Compilation
+
+```
+nim c -d:release packagescanner2.nim
+```
+No external dependencies required.
+
 ## Usage
 
 ```

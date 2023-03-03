@@ -22,7 +22,7 @@
       "web",
       "prologue",
       "starlight",
-      "jester"
+      "jester",
     ],
     "description": "Another micro web framework.",
     "license": "MIT",
@@ -38,6 +38,18 @@
     ],
     "description": "description",
     "license": "test",
+    "web": "https://github.com/deleted/deletedweb",
+    "doc": "https://github.com/deleted/deleteddoc"
+  },
+  {
+    "name": "test_deleted",
+    "url": "https://github.com/deleted/deleted",
+    "method": "git",
+    "tags": [
+      "deleted"
+    ],
+    "description": "description",
+    "license": "MIT",
     "web": "https://github.com/deleted/deletedweb",
     "doc": "https://github.com/deleted/deleteddoc"
   },

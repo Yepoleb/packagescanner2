@@ -88,6 +88,7 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
     client = newHttpClient(timeout=3000)
     client.headers = newHttpHeaders({"User-Agent": "Nim packge_scanner/2.0"})
   
+  var modifiedPackages = 0
   var failedPackages = 0
   for pkg in newPackagesJson:
     var success = true  # Set to false by logPackageError
@@ -112,11 +113,12 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
       isModified = oldPackagesTable[pkgNameLower] != pkg
     
     if isModified:
+      inc modifiedPackages
+      
       if pkgName == "":
         logPackageError("Missing package name")
         
       let isAlias = pkg.hasKey("alias")
-      
       if isAlias:
         if packageNameCounter[pkg["alias"].getStr().toLowerAscii()] == 0:
           logPackageError(displayName & " is an alias pointing to a missing package")
@@ -165,12 +167,15 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
           let docUrl = pkg["doc"].getStr()
           if docUrl != downloadUrl:
             checkUrl("doc", docUrl)
-    
+
+
     if not success:
       inc failedPackages
 
+  
+  echo "\nFound ", modifiedPackages, " modified package(s)"
+  echo "Problematic packages count: ", failedPackages
   if failedPackages > 0:
-    echo "\nProblematic packages count: ", failedPackages
     result = 1
   
 

@@ -57,10 +57,12 @@ template checkUrl(urlType: string, url: string) =
       logPackageError(urlError)
 
 proc getStrIfExists(n: JsonNode, name: string, default: string = ""): string =
+  result = default
   if n.hasKey(name) and n[name].kind == JString:
     result = n[name].str
 
 proc getElemsIfExists(n: JsonNode, name: string, default: seq[JsonNode] = @[]): seq[JsonNode] =
+  result = default
   if n.hasKey(name) and n[name].kind == JArray:
     result = n[name].elems
 

@@ -73,17 +73,17 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
   if oldPackagesPath != "":
     let oldPackagesJson = parseJson(readFile(oldPackagesPath))
     for oldPkg in oldPackagesJson:
-      let oldNameLower = oldPkg.getStrIfExists("name").toLowerAscii()
-      if oldNameLower != "":
-        oldPackagesTable[oldNameLower] = oldPkg
+      let oldNameNorm = oldPkg.getStrIfExists("name").normalize()
+      if oldNameNorm != "":
+        oldPackagesTable[oldNameNorm] = oldPkg
 
   let newPackagesJson = parseJson(readFile(newPackagesPath))
   # Do a first pass through the list to count duplicate names
   var packageNameCounter = initCountTable[string]()
   for pkg in newPackagesJson:
-    let pkgNameLower = pkg.getStrIfExists("name").toLowerAscii()
-    if pkgNameLower != "":
-      packageNameCounter.inc(pkgNameLower)
+    let pkgNameNorm = pkg.getStrIfExists("name").normalize()
+    if pkgNameNorm != "":
+      packageNameCounter.inc(pkgNameNorm)
 
   var client: HttpClient = nil
   if checkUrls:
@@ -95,24 +95,24 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
   for pkg in newPackagesJson:
     var success = true  # Set to false by logPackageError
     let pkgName = pkg.getStrIfExists("name")
-    let pkgNameLower = pkgName.toLowerAscii()
+    let pkgNameNorm = pkgName.normalize()
     var displayName = pkgName
     if displayName == "":
       displayName = "<unnamed package>"
 
     # Start with detecting duplicates
-    if packageNameCounter[pkgNameLower] > 1:
+    if packageNameCounter[pkgNameNorm] > 1:
       let url = pkg.getStrIfExists("url", "<no url>")
       logPackageError("Duplicate package " & displayName & " from url " & url)
 
     # isNew should be used in future versions to do a conditional inspection
     # of the package contents which requires downloading the full release tarball
-    let isNew = not oldPackagesTable.hasKey(pkgNameLower)
+    let isNew = not oldPackagesTable.hasKey(pkgNameNorm)
     var isModified: bool
     if isNew:
       isModified = true
     else:
-      isModified = oldPackagesTable[pkgNameLower] != pkg
+      isModified = oldPackagesTable[pkgNameNorm] != pkg
 
     if isModified:
       inc modifiedPackages

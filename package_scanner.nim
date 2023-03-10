@@ -1,3 +1,20 @@
+# Package scanner for the nimble package list.
+#
+# Check the packages for:
+# * Duplicate and invalid names
+# * Missing alias targets
+# * Empty tags
+# * Invalid method
+# * Missing description or license
+# * Unavailable URLs
+# * Insecure URLs
+#
+# Usage: nim r package_scanner.nim <packages.json> [--old=packages_old.json] [--check-urls]
+#
+# Copyright 2015 Federico Ceratto <federico.ceratto@gmail.com>
+# Copyright 2023 Gabriel Huber <mail@gabrielhuber.at>
+# Released under GPLv3 License, see LICENSE-GPLv3.txt
+
 import std/parseopt
 import std/os
 import std/json

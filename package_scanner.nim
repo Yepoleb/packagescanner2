@@ -90,8 +90,8 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
     client = newHttpClient(timeout=3000)
     client.headers = newHttpHeaders({"User-Agent": "Nim packge_scanner/2.0"})
 
-  var modifiedPackages = 0
-  var failedPackages = 0
+  var modifiedPackagesCount = 0
+  var failedPackagesCount = 0
   for pkg in newPackagesJson:
     var success = true  # Set to false by logPackageError
     let pkgName = pkg.getStrIfExists("name")
@@ -115,7 +115,7 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
       isModified = oldPackagesTable[pkgNameNorm] != pkg
 
     if isModified:
-      inc modifiedPackages
+      inc modifiedPackagesCount
 
       if pkgName == "":
         logPackageError("Missing package name")
@@ -173,7 +173,7 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
 
 
     if not success:
-      inc failedPackages
+      inc failedPackagesCount
 
 
   if client != nil:
@@ -181,9 +181,9 @@ proc checkPackages(newPackagesPath: string, oldPackagesPath: string, checkUrls: 
 
   echo ""
   if oldPackagesPath != "":
-    echo "Found ", modifiedPackages, " modified package(s)"
-  echo "Problematic packages count: ", failedPackages
-  if failedPackages > 0:
+    echo "Found ", modifiedPackagesCount, " modified package(s)"
+  echo "Problematic packages count: ", failedPackagesCount
+  if failedPackagesCount > 0:
     result = 1
 
 

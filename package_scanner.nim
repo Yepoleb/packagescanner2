@@ -9,7 +9,7 @@ import std/net
 
 
 const usage = """
-Usage: packagescanner2 <packages.json> [--old=packages_old.json] [--check-urls]
+Usage: package_scanner <packages.json> [--old=packages_old.json] [--check-urls]
 Scans the nimble package list for mistakes and dead packages.
 Options:
   --old=        Old package file, will only scan changed packages

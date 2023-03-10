@@ -19,14 +19,14 @@ Checks packages for:
 ## Compilation
 
 ```
-nim c -d:release packagescanner2.nim
+nim c -d:release package_scanner.nim
 ```
 No external dependencies required.
 
 ## Usage
 
 ```
-packagescanner2 <packages.json> [--old=packages_old.json] [--check-urls]
+package_scanner <packages.json> [--old=packages_old.json] [--check-urls]
 ```
 
 If an old package list is specified only changed packages are checked.  
